@@ -1,11 +1,13 @@
-package com.got.print.dto;
+package com.got.print.resource;
 
 import java.util.Date;
 
 import com.got.print.persistance.User;
 
-public class NoteDTO {
-	
+public class NoteResource {
+
+	@SuppressWarnings("unused")
+	private static final long serialVersionUID = 5649969962073117903L;
 
 	private int id;
 	
@@ -103,6 +105,4 @@ public class NoteDTO {
 		this.user = user;
 	}
 	
-	
-
 }
