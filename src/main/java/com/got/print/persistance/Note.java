@@ -19,6 +19,8 @@ import javax.persistence.Table;
 		 *
 		 */
 		private static final long serialVersionUID = 5649969962073117903L;
+		
+		  public static final String NOTE_ID = "note_id";
 
 		private int id;
 		

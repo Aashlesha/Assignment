@@ -15,7 +15,7 @@ CREATE TABLE note (
 
     note_id int,
     title varchar(50),
-    note varchar(1000),
+    note text,
     user_id int,
     create_time timestamp without time zone,
     update_date_time timestamp without time zone,

@@ -36,12 +36,12 @@ public class NotesController {
 	private NoteServiceManagerBean noteServiceManagerBean;
 	
 
-	@RequestMapping(value = "users/{userId}/notes/{noteId}", method = {RequestMethod.GET,RequestMethod.HEAD}, produces = UrlConstants.NOTE_MEDIA_TYPE)
-	public ResponseEntity<NoteResource> getPeriodById(@PathVariable("userId") String userId,@PathVariable("noteId") String noteId,HttpServletRequest request, Locale locale) throws Exception {
+	@RequestMapping(value = "/users/{userId}/notes/{noteId}", method = {RequestMethod.GET,RequestMethod.HEAD}, produces = UrlConstants.NOTE_MEDIA_TYPE)
+	public ResponseEntity<NoteResource> getPeriodById(@PathVariable("userId") int userId,@PathVariable("noteId") int noteId,HttpServletRequest request, Locale locale) throws Exception {
 		
 		try{
 			
-			NoteDTO noteDto = noteServiceManagerBean.getNoteById();
+			NoteDTO noteDto = noteServiceManagerBean.getNoteById(userId, noteId);
 			
 			NoteResource noteResource =NoteDTOConverter.convertToNoteResource(noteDto);
 			
@@ -77,6 +77,7 @@ public class NotesController {
 			NoteDTO dto = new NoteDTO();
 
 			dto.setTitle(res.getTitle());
+			dto.setNote(res.getNote());;
 		//add for all attributes
 
 			return dto;

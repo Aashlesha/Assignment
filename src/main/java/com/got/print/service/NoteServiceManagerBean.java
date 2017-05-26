@@ -2,6 +2,7 @@ package com.got.print.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.got.print.dto.NoteDTO;
+import com.got.print.home.NoteHome;
+import com.got.print.persistance.Note;
 
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 @Service
@@ -20,13 +23,19 @@ public class NoteServiceManagerBean {
 	 */
 	private static String CLASS_NAME = NoteServiceManagerBean.class.getName();
 	private static final Logger logger = LoggerFactory.getLogger(CLASS_NAME);
+	
+	@Autowired
+	private NoteHome noteHome;
 
-	public NoteDTO getNoteById() {
+	public NoteDTO getNoteById(int userId,int noteId) throws Exception {
 
 		try {
 			
 			NoteDTO noteDTO = new NoteDTO();
-			// Logic to be added
+			
+			Note note = noteHome.findNoteById(noteId);
+			
+			noteDTO = toDTO(note);
 			
 			return noteDTO;
 			
@@ -35,6 +44,15 @@ public class NoteServiceManagerBean {
 			logger.error(e.getMessage());
 			throw e;
 		}
+	}
+	
+	
+	
+	public NoteDTO toDTO(Note note){
+		
+		NoteDTO dto = new NoteDTO();
+		
+		return dto;
 	}
 
 }
