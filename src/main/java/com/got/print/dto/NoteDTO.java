@@ -2,7 +2,7 @@ package com.got.print.dto;
 
 import java.util.Date;
 
-import com.got.print.persistance.User;
+import com.got.print.persistance.Note_User;
 
 public class NoteDTO {
 	
@@ -17,7 +17,7 @@ public class NoteDTO {
 
 	private Date update_date_time;
 	
-	private User user;
+	private Note_User noteUser;
 
 	/**
 	 * @return the id
@@ -90,19 +90,17 @@ public class NoteDTO {
 	}
 
 	/**
-	 * @return the user
+	 * @return the noteUser
 	 */
-	public User getUser() {
-		return user;
+	public Note_User getNoteUser() {
+		return noteUser;
 	}
 
 	/**
-	 * @param user the user to set
+	 * @param noteUser the noteUser to set
 	 */
-	public void setUser(User user) {
-		this.user = user;
+	public void setNoteUser(Note_User noteUser) {
+		this.noteUser = noteUser;
 	}
-	
-	
 
 }

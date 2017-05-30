@@ -5,35 +5,33 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 	@Entity
 	@Table(name="note_user")
-	public class User implements Serializable {
+	public class Note_User implements Serializable {
 
 		/**
 		 *
 		 */
 		private static final long serialVersionUID = 5649969962073117903L;
 
-		@Id
-		@Column(name="user_id")
 		private int id;
 		
-		@Column(name="email")
 		private String email;
 		
-		@Column(name="password")
 		private String password;
 		
-		@Column(name="create_time")
 		private Date create_time;
 
-		@Column(name="update_date_time")
 		private Date update_date_time;
 		
-		public User()
+		private String role;
+		
+		public Note_User()
 		{
 			
 		}
@@ -41,6 +39,10 @@ import javax.persistence.Table;
 		/**
 		 * @return the id
 		 */
+		
+		@Id
+		@GeneratedValue(strategy = GenerationType.AUTO)
+		@Column(name="user_id")
 		public int getId() {
 			return id;
 		}
@@ -55,6 +57,8 @@ import javax.persistence.Table;
 		/**
 		 * @return the email
 		 */
+		
+		@Column(name="email")
 		public String getEmail() {
 			return email;
 		}
@@ -69,6 +73,7 @@ import javax.persistence.Table;
 		/**
 		 * @return the password
 		 */
+		@Column(name="password")
 		public String getPassword() {
 			return password;
 		}
@@ -83,6 +88,7 @@ import javax.persistence.Table;
 		/**
 		 * @return the create_time
 		 */
+		@Column(name="create_time")
 		public Date getCreate_time() {
 			return create_time;
 		}
@@ -97,6 +103,7 @@ import javax.persistence.Table;
 		/**
 		 * @return the update_date_time
 		 */
+		@Column(name="update_date_time")
 		public Date getUpdate_date_time() {
 			return update_date_time;
 		}
@@ -106,6 +113,21 @@ import javax.persistence.Table;
 		 */
 		public void setUpdate_date_time(Date update_date_time) {
 			this.update_date_time = update_date_time;
+		}
+
+		/**
+		 * @return the role
+		 */
+		@Column(name="role")
+		public String getRole() {
+			return role;
+		}
+
+		/**
+		 * @param role the role to set
+		 */
+		public void setRole(String role) {
+			this.role = role;
 		}
 		
 }

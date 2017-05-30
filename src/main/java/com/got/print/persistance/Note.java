@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -32,12 +34,13 @@ import javax.persistence.Table;
 
 		private Date update_date_time;
 		
-		private User user;
+		private Note_User user;
 
 		/**
 		 * @return the id
 		 */
 		@Id
+		@GeneratedValue(strategy = GenerationType.AUTO)
 		@Column(name="note_id")
 		public int getId() {
 			return id;
@@ -113,18 +116,20 @@ import javax.persistence.Table;
 		/**
 		 * @return the user
 		 */
+		
 	    @ManyToOne(fetch = FetchType.LAZY)
 	    @JoinColumn(name = "user_id", unique = false, nullable = true, insertable = true, updatable = true)
-		public User getUser() {
+		public Note_User getUser() {
 			return user;
 		}
 
 		/**
 		 * @param user the user to set
 		 */
-		public void setUser(User user) {
+		public void setUser(Note_User user) {
 			this.user = user;
 		}
+
 		
 }
 

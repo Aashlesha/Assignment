@@ -2,12 +2,9 @@ package com.got.print.resource;
 
 import java.util.Date;
 
-import com.got.print.persistance.User;
+import org.springframework.hateoas.Links;
 
-public class NoteResource {
-
-	@SuppressWarnings("unused")
-	private static final long serialVersionUID = 5649969962073117903L;
+public class NoteResource extends Links {
 
 	private int id;
 	
@@ -19,8 +16,8 @@ public class NoteResource {
 
 	private Date update_date_time;
 	
-	private User user;
-
+	private UserResource userResource;
+	
 	/**
 	 * @return the id
 	 */
@@ -90,19 +87,86 @@ public class NoteResource {
 	public void setUpdate_date_time(Date update_date_time) {
 		this.update_date_time = update_date_time;
 	}
-
+	
 	/**
-	 * @return the user
+	 * @return the userResource
 	 */
-	public User getUser() {
-		return user;
+	public UserResource getUserResource() {
+		return userResource;
 	}
 
 	/**
-	 * @param user the user to set
+	 * @param userResource the userResource to set
 	 */
-	public void setUser(User user) {
-		this.user = user;
+	public void setUserResource(UserResource userResource) {
+		this.userResource = userResource;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((create_time == null) ? 0 : create_time.hashCode());
+		result = prime * result + id;
+		result = prime * result + ((note == null) ? 0 : note.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		result = prime
+				* result
+				+ ((update_date_time == null) ? 0 : update_date_time.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NoteResource other = (NoteResource) obj;
+		if (create_time == null) {
+			if (other.create_time != null)
+				return false;
+		} else if (!create_time.equals(other.create_time))
+			return false;
+		if (id != other.id)
+			return false;
+		if (note == null) {
+			if (other.note != null)
+				return false;
+		} else if (!note.equals(other.note))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (update_date_time == null) {
+			if (other.update_date_time != null)
+				return false;
+		} else if (!update_date_time.equals(other.update_date_time))
+			return false;
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "NoteResource [id=" + id + ", title=" + title + ", note=" + note
+				+ ", create_time=" + create_time + ", update_date_time="
+				+ update_date_time + ", userResource=" + userResource + "]";
+	}
+	
+	
 	
 }
