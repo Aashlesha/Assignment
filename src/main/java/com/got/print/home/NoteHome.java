@@ -1,5 +1,6 @@
 package com.got.print.home;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.LoggerFactory;
@@ -90,6 +91,21 @@ public class NoteHome {
 		} catch (Exception e) {
 
 			log.info("deleteNote: Failed");
+
+			throw e;
+		}
+	}
+
+	public List<Note> getNotes(int uId) {
+		try {
+			
+			log.info("getNotes: Success");
+			
+			return null;//noteRepository.findNotesByUser(uId);
+
+		} catch (Exception e) {
+
+			log.info("getNotes: Failed");
 
 			throw e;
 		}

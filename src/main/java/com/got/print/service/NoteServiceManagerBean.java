@@ -1,5 +1,8 @@
 package com.got.print.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,6 +144,24 @@ public class NoteServiceManagerBean {
 		note.setUser(noteUserHome.getNoteUserById(dto.getNoteUser()));
 		
 		return note;
+	}
+
+	public List<NoteDTO> getNotes(int uId) {
+
+		List<Note> objList =noteHome.getNotes(uId);
+		
+		List<NoteDTO> list = new ArrayList<NoteDTO>();
+
+		if (null != objList) {
+			
+			for (int i = 0; i < objList.size(); i++) {
+
+				list.add(toDTO(objList.get(i)));
+
+			}
+		}
+		
+		return list;
 	}
 
 }

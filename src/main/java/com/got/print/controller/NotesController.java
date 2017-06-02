@@ -1,5 +1,6 @@
 package com.got.print.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -214,6 +215,45 @@ public class NotesController {
 		}
 	}
 	
+	@RequestMapping(value = "/users/{userId}/notes/", method = {RequestMethod.GET}, produces = UrlConstants.NOTE_COLLECTION_MEDIA_TYPE)
+	public ResponseEntity<List<NoteResource>> getNotes(@PathVariable("userId") String userId,String noteId,HttpServletRequest request, Locale locale) throws Exception {
+		
+		try{
+			
+			validationUtil.validateUserId(userId);
+
+			int uId = Integer.valueOf(userId);
+
+			List<NoteDTO> noteDtoList = noteServiceManagerBean.getNotes(uId);
+
+			List<NoteResource> noteResources = new ArrayList<NoteResource>();
+			
+			for(int i = 0; i< noteDtoList.size();i++){
+				
+				NoteResource resource = NoteDTOConverter.convertToNoteResource(noteDtoList.get(i));
+				
+				Link link = new Link(UrlConstants.APPLICATION_URI+ UrlConstants.USERS_URI + userId + UrlConstants.NOTE_URI,Link.REL_PREVIOUS);
+
+				resource.add(link);
+				
+				noteResources.add(resource);
+			}
+
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+
+
+
+			ResponseEntity<List<NoteResource>> responseEntity = new ResponseEntity<List<NoteResource>>(noteResources, headers, HttpStatus.OK);
+
+			return responseEntity;
+
+		}catch(Exception e){
+			
+			log.error(e.getMessage());
+			
+			throw e;
+		}
+	}
 	
 	
 	private static class NoteDTOConverter {
