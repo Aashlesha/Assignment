@@ -1,5 +1,8 @@
 package com.got.print.controller;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -7,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -22,6 +26,7 @@ import com.got.print.dto.NoteDTO;
 import com.got.print.resource.NoteResource;
 import com.got.print.service.NoteServiceManagerBean;
 import com.got.print.validation.util.UrlConstants;
+import com.got.print.validation.util.ValidationUtil;
 
 
 @RestController
@@ -38,22 +43,34 @@ public class NotesController {
 	@Autowired
 	private NoteServiceManagerBean noteServiceManagerBean;
 	
-
+	@Autowired
+	private ValidationUtil validationUtil;
+	
 	@RequestMapping(value = "/users/{userId}/notes/{noteId}", method = {RequestMethod.GET,RequestMethod.HEAD}, produces = UrlConstants.NOTE_MEDIA_TYPE)
-	public ResponseEntity<NoteResource> getNoteById(@PathVariable("userId") int userId,@PathVariable("noteId") int noteId,HttpServletRequest request, Locale locale) throws Exception {
+	public ResponseEntity<NoteResource> getNoteById(@PathVariable("userId") String userId,@PathVariable("noteId") String noteId,HttpServletRequest request, Locale locale) throws Exception {
 		
 		try{
 			
-			NoteDTO noteDto = noteServiceManagerBean.getNoteById(userId);
-			
-			NoteResource noteResource =NoteDTOConverter.convertToNoteResource(noteDto);
-			
+			validationUtil.validateUserId(userId);
+			validationUtil.validateNoteId(userId, noteId);
+
+			int nId = Integer.valueOf(noteId);
+			int uId = Integer.valueOf(userId);
+
+			NoteDTO noteDto = noteServiceManagerBean.getNoteById(nId, uId);
+
+			NoteResource noteResource = NoteDTOConverter.convertToNoteResource(noteDto);
+
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-			
+
+			Link link = new Link(UrlConstants.APPLICATION_URI+ UrlConstants.USERS_URI + userId + UrlConstants.NOTE_URI,Link.REL_PREVIOUS);
+
+			noteResource.add(link);
+
 			ResponseEntity<NoteResource> responseEntity = new ResponseEntity<NoteResource>(noteResource, headers, HttpStatus.OK);
-			
+
 			return responseEntity;
-			
+
 		}catch(Exception e){
 			
 			log.error(e.getMessage());
@@ -63,20 +80,32 @@ public class NotesController {
 	
 	@RequestMapping(value = "/users/{userId}/notes", method = RequestMethod.POST, consumes = UrlConstants.NOTE_MEDIA_TYPE, produces = UrlConstants.NOTE_MEDIA_TYPE)
 	@ResponseBody
-	public ResponseEntity<NoteResource> createNote(@PathVariable("userId") int userId,@RequestBody NoteResource noteResource, Locale locale) throws Exception {
+	public ResponseEntity<NoteResource> createNote(@PathVariable("userId") String userId,@RequestBody NoteResource noteResource, Locale locale) throws Exception {
 
 		try {
 			
+			validationUtil.validateUserId(userId);
+			
+			ValidationUtil.validateResource(noteResource);
+
+			noteResource.setCreate_time(new Date());
+			noteResource.setUpdate_date_time(new Date());
+			noteResource.setNoteUser(Integer.parseInt(userId));
+			
 			NoteDTO noteDTO = NoteDTOConverter.convertToNoteDTO(noteResource);
-			
+
 			noteDTO = noteServiceManagerBean.createNote(noteDTO);
-			
+
 			NoteResource res = NoteDTOConverter.convertToNoteResource(noteDTO);
-			
+
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 			
+			Link link = new Link(UrlConstants.APPLICATION_URI+ UrlConstants.USERS_URI + userId+ UrlConstants.NOTE_URI, Link.REL_PREVIOUS);
+
+			res.add(link);
+
 			ResponseEntity<NoteResource> responseEntity = new ResponseEntity<NoteResource>(res, headers, HttpStatus.OK);
-			
+
 			return responseEntity;
 
 		} catch (Exception e) {
@@ -88,19 +117,32 @@ public class NotesController {
 	
 	@RequestMapping(value = "/users/{userId}/notes/{noteId}", method = RequestMethod.PUT, consumes = UrlConstants.NOTE_MEDIA_TYPE, produces = UrlConstants.NOTE_MEDIA_TYPE)
 	@ResponseBody
-	public ResponseEntity<NoteResource> updateNote(@PathVariable("userId") int userId,@PathVariable("noteId") int noteId,@RequestBody NoteResource noteResource, Locale locale) throws Exception {
+	public ResponseEntity<NoteResource> updateNote(@PathVariable("userId") String userId,@PathVariable("noteId") String noteId,@RequestBody NoteResource noteResource, Locale locale) throws Exception {
 
 		try {
 			
-			NoteDTO noteDTO = NoteDTOConverter.convertToNoteDTO(noteResource);
+			validationUtil.validateUserId(userId);
 			
-			noteDTO.setId(noteId);
+			validationUtil.validateNoteId(userId, noteId);
 			
-			noteDTO = noteServiceManagerBean.updateNote(noteDTO);
+			ValidationUtil.validateResource(noteResource);
+
+			NoteDTO noteDto = noteServiceManagerBean.getNoteById(Integer.valueOf(noteId), Integer.valueOf(userId));
 			
-			NoteResource res = NoteDTOConverter.convertToNoteResource(noteDTO);
+			noteDto.setNote(noteResource.getNote());
+			noteDto.setTitle(noteResource.getTitle());
+			noteDto.setUpdate_date_time(new Date());
+			
+			
+			noteDto = noteServiceManagerBean.updateNote(noteDto);
+			
+			NoteResource res = NoteDTOConverter.convertToNoteResource(noteDto);
 			
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+			
+			Link link = new Link(UrlConstants.APPLICATION_URI+ UrlConstants.USERS_URI + userId+ UrlConstants.NOTE_URI, Link.REL_PREVIOUS);
+
+			res.add(link);
 			
 			ResponseEntity<NoteResource> responseEntity = new ResponseEntity<NoteResource>(res, headers, HttpStatus.OK);
 			
@@ -115,13 +157,17 @@ public class NotesController {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/users/{userId}/notes/{noteId}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteFolder(@PathVariable("userId") int userId,@PathVariable("noteId") int noteId, Locale locale) {
+	public ResponseEntity<?> deleteFolder(@PathVariable("userId") String userId,@PathVariable("noteId") String noteId, Locale locale) throws Exception {
 
 		log.info("Delete Phase for Cycle id and folder id provided.");
 
 		try {
 
-			noteServiceManagerBean.deleteNote(noteId);
+			validationUtil.validateUserId(userId);
+			
+			validationUtil.validateNoteId(userId,noteId);
+			
+			noteServiceManagerBean.deleteNote(Integer.valueOf(noteId));
 
 			return new ResponseEntity(HttpStatus.NO_CONTENT);
 
@@ -131,6 +177,43 @@ public class NotesController {
 			throw e;
 		}
 	}
+	
+	@RequestMapping(value = "/authorization", method = {RequestMethod.POST}, produces = "text/plain")
+	@ResponseBody
+	public ResponseEntity<String> getToken(@RequestBody String userDetails,HttpServletRequest request, Locale locale) throws Exception {
+		
+		try{
+			if(null == userDetails){
+				
+				throw new Exception("User details missing");
+			}
+			
+			
+			List<String> detailList = Arrays.asList(userDetails.split("&"));
+			
+			if (null == detailList || !userDetails.contains("&") || detailList.size() !=2) {
+
+				throw new Exception("Invalid user details.");
+			}
+			
+			String userId  = detailList.get(0);
+			
+			String password  = detailList.get(1);
+			
+			System.out.println(userId + "pass :"+password);
+
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+			
+			ResponseEntity<String> responseEntity = new ResponseEntity<String>(userDetails, headers, HttpStatus.OK);
+			return responseEntity;
+
+		}catch(Exception e){
+			
+			log.error(e.getMessage());
+			throw e;
+		}
+	}
+	
 	
 	
 	private static class NoteDTOConverter {
@@ -143,10 +226,12 @@ public class NotesController {
 
 			NoteDTO dto = new NoteDTO();
 
+			dto.setId(res.getNote_id());
 			dto.setTitle(res.getTitle());
 			dto.setNote(res.getNote());;
 			dto.setCreate_time(res.getCreate_time());
 			dto.setUpdate_date_time(res.getUpdate_date_time());
+			dto.setNoteUser(res.getNoteUser());
 
 			return dto;
 		}
@@ -159,14 +244,12 @@ public class NotesController {
 
 			NoteResource res = new NoteResource();
 
-			res.setId(dto.getId());
+			res.setNote_id(dto.getId());
 			res.setTitle(dto.getTitle());
 			res.setNote(dto.getNote());
 			res.setCreate_time(dto.getCreate_time());
 			res.setUpdate_date_time(dto.getUpdate_date_time());
-			
-			
-		//add for all attributes
+			res.setNoteUser(dto.getNoteUser());
 
 			return res;
 		}

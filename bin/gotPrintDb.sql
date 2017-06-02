@@ -6,7 +6,7 @@ use gotPringDB
 drop table if exists note_user;
 
 CREATE TABLE note_user(
-    user_id int,
+    user_id int AUTO_INCREMENT,
     email varchar(50),
     password varchar(30),
     create_time timestamp,
@@ -19,7 +19,7 @@ drop table if exists note;
 
 CREATE TABLE note (
 
-    note_id int,
+    note_id int AUTO_INCREMENT ,
     title varchar(50),
     note text,
     user_id int,

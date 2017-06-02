@@ -1,36 +1,40 @@
 package com.got.print.home;
 
-import java.util.Date;
+import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import com.got.print.persistance.Note;
 
+
 @Component
-@Repository
 public class NoteHome {
 
-	private static final Logger log = LoggerFactory.getLogger(NoteHome.class);
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(NoteHome.class);
 
-	@PersistenceContext
-	private EntityManager entityManager;
+	@Autowired
+    private NoteRepository noteRepository;
+	
+	public Note getNoteById(int noteId) throws Exception {
 
-	public Note getNoteById(int noteId) {
-		
 		try {
+
+			Optional<Note> note = noteRepository.findById(noteId);
 			
-			Note note = entityManager.find(Note.class, noteId);
+			Note retObj = null;
+			
+			if(note.isPresent()){
+
+			 retObj = note.get();
+			
+			}
 			
 			log.info("getNoteById: Success");
 
-			return note;
-			
+			return retObj;
+
 		} catch (Exception e) {
 
 			log.info("getNoteById: Failed");
@@ -39,13 +43,15 @@ public class NoteHome {
 		}
 	}
 
-	public void createNote(Note note) {
+	public Note createNote(Note note) {
 
 		try {
 
-			entityManager.persist(note);
+			Note noteCreated =noteRepository.save(note);
 
 			log.info("createNote: Success");
+			
+			return noteCreated;
 
 		} catch (Exception e) {
 			
@@ -55,21 +61,15 @@ public class NoteHome {
 		}
 	}
 
-	public Note updateNote(Note note) {
+	public Note updateNote(Note note) throws Exception {
 
 		try {
 
-			Note obj = getNoteById(note.getId());
-
-			obj.setNote(note.getNote());
-			obj.setTitle(note.getTitle());
-			obj.setUpdate_date_time(new Date());
+			note = noteRepository.save(note);
 
 			log.info("updateNote: Success");
-
-			entityManager.flush();
 			
-			return getNoteById(note.getId());
+			return note;
 
 		} catch (Exception e) {
 
@@ -79,11 +79,11 @@ public class NoteHome {
 		}
 	}
 
-	public void deleteNote(int noteId) {
+	public void deleteNote(int noteId) throws Exception {
 	
 		try {
 		
-			entityManager.remove(getNoteById(noteId));
+			noteRepository.delete(getNoteById(noteId));
 
 			log.info("deleteNote: Success");
 			

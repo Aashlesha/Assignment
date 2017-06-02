@@ -8,6 +8,10 @@ public class UrlConstants {
 	
 	public static final String APPLICATION_URI ="/gotPrint";
 	
+	public static final String USERS_URI = "/users";
+	
+	public static final String SLASH = "/";
+
 	
 	
 }

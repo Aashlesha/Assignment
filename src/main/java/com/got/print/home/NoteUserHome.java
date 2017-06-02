@@ -1,34 +1,45 @@
 package com.got.print.home;
 
-import java.util.List;
+import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import com.got.print.persistance.Note_User;
 
-@Repository
 @Component
 public class NoteUserHome {
-
-	@PersistenceContext	
-	private EntityManager entityManager;
 	
-	public Note_User getCurrentNoteUser(String userId) {
-		
-		Note_User activeUserInfo = new Note_User();
-		
-		List<?> list = entityManager.createQuery("SELECT u FROM UserInfo u WHERE user_id=?")
-				.setParameter(1, userId).getResultList();
-		
-		if(!list.isEmpty()) {
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(NoteUserHome.class);
+	
+	@Autowired
+    private NoteUserRepository noteRepository;
+	
+	public Note_User getNoteUserById(int userId) throws Exception {
+
+		try {
+
+			Optional<Note_User> noteUser = noteRepository.findById(userId);
+
+			Note_User retObj = null;
 			
-			activeUserInfo = (Note_User)list.get(0);
-		
+			if(noteUser.isPresent()){
+			
+				retObj = noteUser.get();
+			
+			}
+			
+			log.info("getNoteUserById: Success");
+
+			return retObj;
+
+		} catch (Exception e) {
+
+			log.info("getNoteUserById: Failed");
+
+			throw e;
 		}
-		return activeUserInfo;
 	}
 }
+

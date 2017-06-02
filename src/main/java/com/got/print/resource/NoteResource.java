@@ -2,36 +2,35 @@ package com.got.print.resource;
 
 import java.util.Date;
 
-import org.springframework.hateoas.Links;
+import org.springframework.hateoas.ResourceSupport;
 
-public class NoteResource extends Links {
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-	private int id;
+public class NoteResource extends ResourceSupport {
+
+	public static final int MEDIA_TYPE_VERSION = 1;
+	
+	private int version;
+	
+	private int note_id;
 	
 	private String title;
 	
 	private String note;
 	
+	@JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
 	private Date create_time;
 
+	@JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
 	private Date update_date_time;
 	
-	private UserResource userResource;
+	private int noteUser;
 	
-	/**
-	 * @return the id
-	 */
-	public int getId() {
-		return id;
+	public NoteResource() {
+		super();
+		setVersion(MEDIA_TYPE_VERSION);
+		
 	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	/**
 	 * @return the title
 	 */
@@ -87,19 +86,47 @@ public class NoteResource extends Links {
 	public void setUpdate_date_time(Date update_date_time) {
 		this.update_date_time = update_date_time;
 	}
-	
+
 	/**
-	 * @return the userResource
+	 * @return the noteUser
 	 */
-	public UserResource getUserResource() {
-		return userResource;
+	public int getNoteUser() {
+		return noteUser;
 	}
 
 	/**
-	 * @param userResource the userResource to set
+	 * @param noteUser the noteUser to set
 	 */
-	public void setUserResource(UserResource userResource) {
-		this.userResource = userResource;
+	public void setNoteUser(int noteUser) {
+		this.noteUser = noteUser;
+	}
+
+	/**
+	 * @return the version
+	 */
+	public int getVersion() {
+		return version;
+	}
+
+	/**
+	 * @param version the version to set
+	 */
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+	/**
+	 * @return the note_id
+	 */
+	public int getNote_id() {
+		return note_id;
+	}
+
+	/**
+	 * @param note_id the note_id to set
+	 */
+	public void setNote_id(int note_id) {
+		this.note_id = note_id;
 	}
 
 	/* (non-Javadoc)
@@ -111,7 +138,7 @@ public class NoteResource extends Links {
 		int result = 1;
 		result = prime * result
 				+ ((create_time == null) ? 0 : create_time.hashCode());
-		result = prime * result + id;
+		result = prime * result + note_id;
 		result = prime * result + ((note == null) ? 0 : note.hashCode());
 		result = prime * result + ((title == null) ? 0 : title.hashCode());
 		result = prime
@@ -137,7 +164,7 @@ public class NoteResource extends Links {
 				return false;
 		} else if (!create_time.equals(other.create_time))
 			return false;
-		if (id != other.id)
+		if (note_id != other.note_id)
 			return false;
 		if (note == null) {
 			if (other.note != null)
@@ -162,9 +189,9 @@ public class NoteResource extends Links {
 	 */
 	@Override
 	public String toString() {
-		return "NoteResource [id=" + id + ", title=" + title + ", note=" + note
+		return "NoteResource [id=" + note_id + ", title=" + title + ", note=" + note
 				+ ", create_time=" + create_time + ", update_date_time="
-				+ update_date_time + ", userResource=" + userResource + "]";
+				+ update_date_time + ", userResource=" + noteUser + "]";
 	}
 	
 	
